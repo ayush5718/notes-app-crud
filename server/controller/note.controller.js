@@ -64,10 +64,85 @@ export const editNote = async (req, res, next) => {
       note.isPinned = isPinned;
     }
     await note.save();
+    // const savedNote = await Note.findById(note._id);
     res.status(200).json({
       success: true,
       message: "Note updated successfully",
       note,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// controller to get all notes
+
+export const getAllNote = async (req, res, next) => {
+  const userId = req.user.id;
+  try {
+    const note = await Note.find({ userId }).sort({ isPinned: -1 });
+    res.status(200).json({
+      success: true,
+      message: "All notes fetched successfully",
+      note,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// controller for deleting the notes by its id
+export const deleteNote = async (req, res, next) => {
+  const { noteId } = req.params;
+  try {
+    const note = await Note.findByIdAndDelete(noteId);
+
+    if (!note) {
+      return next(errorHandler(404, "Note not found"));
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Note deleted successfully",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// controllers to get note by id
+export const getNoteById = async (req, res, next) => {
+  const { noteId } = req.params;
+  try {
+    const note = await Note.findById(noteId);
+    if (!note) {
+      return next(errorHandler(404, "Note not found"));
+    }
+    res.status(200).json({
+      success: true,
+      message: "Note fetched successfully",
+      note,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const pinNote = async (req, res, next) => {
+  const { noteId } = req.params;
+
+  try {
+    const note = await Note.findById(noteId);
+    if (!note) {
+      return next(errorHandler(404, "Note not found"));
+    }
+    const isPinned = req.body;
+    note.isPinned = isPinned;
+    await note.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Note pinned successfully",
     });
   } catch (err) {
     next(err);

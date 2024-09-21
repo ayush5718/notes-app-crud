@@ -3,6 +3,7 @@ import User from "../models/user.model.js";
 import { errorHandler } from "../utils/error.js";
 import bcrypt from "bcrypt";
 
+// Sign up user
 export const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
 
